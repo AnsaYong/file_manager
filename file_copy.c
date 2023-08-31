@@ -9,10 +9,9 @@
  */
 int main(void)
 {
-    char source_file[100];
-    char destination_file[100];
-    FILE *fptr_o, *fptr_d;
-    int c;
+    char source_file[100], destination_file[100];
+    int c, r;
+    FILE *fptr_s, *fptr_d;
     
     printf("Enter the source file name: ");
     scanf("%s", source_file);
@@ -21,22 +20,34 @@ int main(void)
     printf("Enter the destination file name: ");
     scanf("%s", destination_file);
 
-    fptr_o = fopen(source_file, "r"); /* open the source file in read mode */
+    fptr_s = fopen(source_file, "r"); /* open the source file in read mode */
     fptr_d = fopen(destination_file, "w"); /* open destination file in write mode */
 
-    if (fptr_o != NULL && fptr_d != NULL)
+    if (fptr_s != NULL && fptr_d != NULL)
     {
-        printf("Both files have been opened.\n");
-        while ((c = fgetc(fptr_o)) != EOF)
+        c = fgetc(fptr_s);
+        while (c != EOF)
         {
             fputc(c, fptr_d);
+            c = fgetc(fptr_s);
         }
-        fclose(fptr_o);
+        fclose(fptr_s);
         fclose(fptr_d);
     }
     else
     {
-        printf("Error opening one of the files. Check that both files are created.\n");
+        printf("Error opening one of the files. Check that both files already exist.\n");
+    }
+
+    /* after copying the source file, remove it using remove() sys call */
+    r = remove(source_file);    /* remove() returns an int, 0 on success and non-zero on failure */
+    if (r == 0)
+    {
+        printf("Copied file successfully deleted.\n");
+    }
+    else
+    {
+        printf("Error deleting copied file.\n");
     }
 
     return(0);
